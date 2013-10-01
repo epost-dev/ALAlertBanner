@@ -125,9 +125,9 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 - (id)init {
     self = [super init];
     if (self) {
-        
+
         [self commonInit];
-        
+
     }
     return self;
 }
@@ -140,7 +140,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     self.alpha = 0.f;
     self.layer.shadowOpacity = 0.5f;
     self.tag = arc4random_uniform(SHRT_MAX);
-    
+
     [self setupSubviews];
     [self setupInitialValues];
 }
@@ -153,7 +153,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     _bannerOpacity = 0.93f;
     _secondsToShow = 3.5;
     _allowTapToDismiss = YES;
-    
+
     manager = [ALAlertBannerManager sharedManager];
     self.delegate = (ALAlertBannerManager <ALAlertBannerViewDelegate> *)manager;
 }
@@ -161,11 +161,11 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 - (void)setupSubviews {
     _styleImageView = [[UIImageView alloc] init];
     [self addSubview:_styleImageView];
-    
+
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.backgroundColor = [UIColor clearColor];
     _titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13.f];
-    _titleLabel.textColor = [UIColor colorWithWhite:1.f alpha:0.9f];
+    _titleLabel.textColor = [UIColor colorWithRed:1.000 green:0.800 blue:0.000 alpha:0.9];
     _titleLabel.textAlignment = NSTextAlignmentLeft;
     _titleLabel.numberOfLines = 1;
     _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -174,11 +174,11 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     _titleLabel.layer.shadowOpacity = 0.3f;
     _titleLabel.layer.shadowRadius = 0.f;
     [self addSubview:_titleLabel];
-    
+
     _subtitleLabel = [[UILabel alloc] init];
     _subtitleLabel.backgroundColor = [UIColor clearColor];
     _subtitleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:10.f];
-    _subtitleLabel.textColor = [UIColor colorWithWhite:1.f alpha:0.9f];
+    _subtitleLabel.textColor = [UIColor colorWithRed:1.000 green:0.800 blue:0.000 alpha:0.9];
     _subtitleLabel.textAlignment = NSTextAlignmentLeft;
     _subtitleLabel.numberOfLines = 0;
     _subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -194,60 +194,60 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 
 -(void)setStyle:(ALAlertBannerStyle)style {
     _style = style;
-    
+
     switch (style) {
         case ALAlertBannerStyleSuccess:
             self.styleImageView.image = [UIImage imageNamed:@"bannerSuccess.png"];
             break;
-            
+
         case ALAlertBannerStyleFailure:
             self.styleImageView.image = [UIImage imageNamed:@"bannerFailure.png"];
             break;
-            
+
         case ALAlertBannerStyleNotify:
             self.styleImageView.image = [UIImage imageNamed:@"bannerNotify.png"];
             break;
-            
+
         case ALAlertBannerStyleWarning:
             self.styleImageView.image = [UIImage imageNamed:@"bannerAlert.png"];
-            
+
             //tone the shadows down a little for the yellow background
             self.titleLabel.layer.shadowOpacity = 0.2f;
             self.subtitleLabel.layer.shadowOpacity = 0.2f;
-            
+
             break;
     }
 }
 
 - (void)setShowShadow:(BOOL)showShadow {
     _showShadow = showShadow;
-    
+
     CGFloat oldShadowRadius = self.layer.shadowRadius;
     CGFloat newShadowRadius;
-    
+
     if (showShadow) {
         newShadowRadius = 3.f;
         self.layer.shadowColor = [UIColor blackColor].CGColor;
         self.layer.shadowOffset = CGSizeMake(0.f, self.position == ALAlertBannerPositionBottom ? -1.f : 1.f);
         CGRect shadowPath = CGRectMake(self.bounds.origin.x - kMargin, self.bounds.origin.y, self.bounds.size.width + kMargin*2.f, self.bounds.size.height);
         self.layer.shadowPath = [UIBezierPath bezierPathWithRect:shadowPath].CGPath;
-        
+
         self.fadeInDuration = 0.15f;
     }
-    
+
     else {
         newShadowRadius = 0.f;
         self.layer.shadowRadius = 0.f;
         self.layer.shadowOffset = CGSizeZero;
-        
+
         //if on iOS7, keep fade in duration at a value greater than 0 so it doesn't instantly appear behind the translucent nav bar
         self.fadeInDuration = (AL_IOS_7_OR_GREATER && self.position == ALAlertBannerPositionTop) ? 0.15f : 0.f;
     }
-    
+
     self.layer.shouldRasterize = YES;
     self.layer.rasterizationScale = [UIScreen mainScreen].scale;
     self.layer.shadowRadius = newShadowRadius;
-    
+
     CABasicAnimation *fadeShadow = [CABasicAnimation animationWithKeyPath:@"shadowRadius"];
     fadeShadow.fromValue = [NSNumber numberWithFloat:oldShadowRadius];
     fadeShadow.toValue = [NSNumber numberWithFloat:newShadowRadius];
@@ -305,21 +305,21 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 
 + (ALAlertBanner *)createAlertBannerForView:(UIView *)view style:(ALAlertBannerStyle)style position:(ALAlertBannerPosition)position title:(NSString *)title subtitle:(NSString *)subtitle {
     ALAlertBanner *alertBanner = [[ALAlertBanner alloc] init];
-    
+
     if (![view isKindOfClass:[UIWindow class]] && position == ALAlertBannerPositionUnderNavBar)
         [[NSException exceptionWithName:@"Wrong ALAlertBannerStyle For View Type" reason:@"ALAlertBannerPositionUnderNavBar should only be used if you are presenting the alert banner on the AppDelegate window. Use ALAlertBannerPositionTop or ALAlertBannerPositionBottom for normal UIViews" userInfo:nil] raise];
-    
+
     alertBanner.titleLabel.text = !title ? @" " : title;
     alertBanner.subtitleLabel.text = subtitle;
     alertBanner.style = style;
     alertBanner.position = position;
     alertBanner.state = ALAlertBannerStateHidden;
-    
+
     [view addSubview:alertBanner];
-    
+
     [alertBanner setInitialLayout];
     [alertBanner updateSizeAndSubviewsAnimated:NO];
-    
+
     return alertBanner;
 }
 
@@ -343,11 +343,11 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
         [self setInitialLayout];
         [self updateSizeAndSubviewsAnimated:NO];
     }
-    
+
     [self.delegate alertBannerWillShow:self inView:self.superview];
-    
+
     self.state = ALAlertBannerStateShowing;
-    
+
     double delayInSeconds = self.fadeInDuration;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -355,18 +355,18 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
             //animate mask
             CGPoint currentPoint = self.layer.mask.position;
             CGPoint newPoint = CGPointMake(0.f, -self.frame.size.height);
-            
+
             self.layer.mask.position = newPoint;
-            
+
             CABasicAnimation *moveMaskUp = [CABasicAnimation animationWithKeyPath:@"position"];
             moveMaskUp.fromValue = [NSValue valueWithCGPoint:currentPoint];
             moveMaskUp.toValue = [NSValue valueWithCGPoint:newPoint];
             moveMaskUp.duration = self.showAnimationDuration;
             moveMaskUp.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-            
+
             [self.layer.mask addAnimation:moveMaskUp forKey:@"position"];
         }
-        
+
         CGPoint oldPoint = self.layer.position;
         CGFloat yCoord = oldPoint.y;
         switch (self.position) {
@@ -379,9 +379,9 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
                 break;
         }
         CGPoint newPoint = CGPointMake(oldPoint.x, yCoord);
-        
+
         self.layer.position = newPoint;
-        
+
         CABasicAnimation *moveLayer = [CABasicAnimation animationWithKeyPath:@"position"];
         moveLayer.fromValue = [NSValue valueWithCGPoint:oldPoint];
         moveLayer.toValue = [NSValue valueWithCGPoint:newPoint];
@@ -389,10 +389,10 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
         moveLayer.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
         moveLayer.delegate = self;
         [moveLayer setValue:kShowAlertBannerKey forKey:@"anim"];
-        
+
         [self.layer addAnimation:moveLayer forKey:kShowAlertBannerKey];
     });
-    
+
     [UIView animateWithDuration:self.fadeInDuration delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         self.alpha = self.bannerOpacity;
     } completion:nil];
@@ -400,24 +400,24 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 
 - (void)hideAlertBanner {
     [self.delegate alertBannerWillHide:self inView:self.superview];
-    
+
     self.state = ALAlertBannerStateHiding;
-    
+
     if (self.position == ALAlertBannerPositionUnderNavBar) {
         CGPoint currentPoint = self.layer.mask.position;
         CGPoint newPoint = CGPointZero;
-        
+
         self.layer.mask.position = newPoint;
-        
+
         CABasicAnimation *moveMaskDown = [CABasicAnimation animationWithKeyPath:@"position"];
         moveMaskDown.fromValue = [NSValue valueWithCGPoint:currentPoint];
         moveMaskDown.toValue = [NSValue valueWithCGPoint:newPoint];
         moveMaskDown.duration = self.hideAnimationDuration;
         moveMaskDown.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-        
+
         [self.layer.mask addAnimation:moveMaskDown forKey:@"position"];
     }
-    
+
     CGPoint oldPoint = self.layer.position;
     CGFloat yCoord = oldPoint.y;
     switch (self.position) {
@@ -430,9 +430,9 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
             break;
     }
     CGPoint newPoint = CGPointMake(oldPoint.x, yCoord);
-    
+
     self.layer.position = newPoint;
-    
+
     CABasicAnimation *moveLayer = [CABasicAnimation animationWithKeyPath:@"position"];
     moveLayer.fromValue = [NSValue valueWithCGPoint:oldPoint];
     moveLayer.toValue = [NSValue valueWithCGPoint:newPoint];
@@ -440,27 +440,27 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     moveLayer.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
     moveLayer.delegate = self;
     [moveLayer setValue:kHideAlertBannerKey forKey:@"anim"];
-    
+
     [self.layer addAnimation:moveLayer forKey:kHideAlertBannerKey];
 }
 
 - (void)pushAlertBanner:(CGFloat)distance forward:(BOOL)forward delay:(double)delay {
     self.state = (forward ? ALAlertBannerStateMovingForward : ALAlertBannerStateMovingBackward);
-    
+
     CGFloat distanceToPush = distance;
     if (self.position == ALAlertBannerPositionBottom)
         distanceToPush *= -1;
-    
+
     CALayer *activeLayer = self.isAnimating ? (CALayer *)[self.layer presentationLayer] : self.layer;
-    
+
     CGPoint oldPoint = activeLayer.position;
     CGPoint newPoint = CGPointMake(oldPoint.x, (self.layer.position.y - oldPoint.y)+oldPoint.y+distanceToPush);
-    
+
     double delayInSeconds = delay;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         self.layer.position = newPoint;
-        
+
         CABasicAnimation *moveLayer = [CABasicAnimation animationWithKeyPath:@"position"];
         moveLayer.fromValue = [NSValue valueWithCGPoint:oldPoint];
         moveLayer.toValue = [NSValue valueWithCGPoint:newPoint];
@@ -468,7 +468,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
         moveLayer.timingFunction = forward ? [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut] : [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
         moveLayer.delegate = self;
         [moveLayer setValue:kMoveAlertBannerKey forKey:@"anim"];
-        
+
         [self.layer addAnimation:moveLayer forKey:kMoveAlertBannerKey];
     });
 }
@@ -479,10 +479,10 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     if (self.state != ALAlertBannerStateVisible)
         return;
-    
+
     if (self.tappedBlock) // && !self.isScheduledToHide ...?
         self.tappedBlock(self);
-    
+
     if (self.allowTapToDismiss)
         [self.delegate hideAlertBanner:self];
 }
@@ -490,12 +490,12 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 # pragma mark -
 # pragma mark Private Methods
 
-- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {    
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
     if ([[anim valueForKey:@"anim"] isEqualToString:kShowAlertBannerKey] && flag) {
         [self.delegate alertBannerDidShow:self inView:self.superview];
         self.state = ALAlertBannerStateVisible;
     }
-    
+
     else if ([[anim valueForKey:@"anim"] isEqualToString:kHideAlertBannerKey] && flag) {
         [UIView animateWithDuration:self.fadeOutDuration delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
             self.alpha = 0.f;
@@ -506,7 +506,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
             [self removeFromSuperview];
         }];
     }
-    
+
     else if ([[anim valueForKey:@"anim"] isEqualToString:kMoveAlertBannerKey] && flag) {
         self.state = ALAlertBannerStateVisible;
     }
@@ -514,16 +514,16 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 
 - (void)setInitialLayout {
     self.layer.anchorPoint = CGPointMake(0.f, 0.f);
-    
+
     UIView *superview = self.superview;
     self.parentFrameUponCreation = superview.bounds;
     BOOL isSuperviewKindOfWindow = ([superview isKindOfClass:[UIWindow class]]);
-    
+
     CGSize maxLabelSize = CGSizeMake(superview.bounds.size.width - (kMargin*3) - self.styleImageView.image.size.width, CGFLOAT_MAX);
     CGFloat titleLabelHeight = AL_SINGLELINE_TEXT_HEIGHT(self.titleLabel.text, self.titleLabel.font);
     CGFloat subtitleLabelHeight = AL_MULTILINE_TEXT_HEIGHT(self.subtitleLabel.text, self.subtitleLabel.font, maxLabelSize, self.subtitleLabel.lineBreakMode);
     CGFloat heightForSelf = titleLabelHeight + subtitleLabelHeight + (self.subtitleLabel.text == nil || self.titleLabel.text == nil ? kMargin*2 : kMargin*2.5);
-    
+
     CGRect frame = CGRectMake(0.f, 0.f, superview.bounds.size.width, heightForSelf);
     CGFloat initialYCoord = 0.f;
     switch (self.position) {
@@ -542,7 +542,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     }
     frame.origin.y = initialYCoord;
     self.frame = frame;
-    
+
     //if position is under the nav bar, add a mask
     if (self.position == ALAlertBannerPositionUnderNavBar) {
         CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
@@ -550,7 +550,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
         CGPathRef path = CGPathCreateWithRect(maskRect, NULL);
         maskLayer.path = path;
         CGPathRelease(path);
-        
+
         self.layer.mask = maskLayer;
         self.layer.mask.position = CGPointZero;
     }
@@ -561,14 +561,14 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     CGFloat titleLabelHeight = AL_SINGLELINE_TEXT_HEIGHT(self.titleLabel.text, self.titleLabel.font);
     CGFloat subtitleLabelHeight = AL_MULTILINE_TEXT_HEIGHT(self.subtitleLabel.text, self.subtitleLabel.font, maxLabelSize, self.subtitleLabel.lineBreakMode);
     CGFloat heightForSelf = titleLabelHeight + subtitleLabelHeight + (self.subtitleLabel.text == nil || self.titleLabel.text == nil ? kMargin*2.f : kMargin*2.5f);
-    
+
     CFTimeInterval boundsAnimationDuration = AL_DEVICE_ANIMATION_DURATION;
-        
+
     CGRect oldBounds = self.layer.bounds;
     CGRect newBounds = oldBounds;
     newBounds.size = CGSizeMake(self.superview.bounds.size.width, heightForSelf);
     self.layer.bounds = newBounds;
-    
+
     if (animated) {
         CABasicAnimation *boundsAnimation = [CABasicAnimation animationWithKeyPath:@"bounds"];
         boundsAnimation.fromValue = [NSValue valueWithCGRect:oldBounds];
@@ -576,25 +576,25 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
         boundsAnimation.duration = boundsAnimationDuration;
         [self.layer addAnimation:boundsAnimation forKey:@"bounds"];
     }
-    
+
     if (animated) {
         [UIView beginAnimations:nil context:NULL];
         [UIView setAnimationDuration:boundsAnimationDuration];
     }
-    
+
     self.styleImageView.frame = CGRectMake(kMargin, (self.frame.size.height/2.f) - (self.styleImageView.image.size.height/2.f), self.styleImageView.image.size.width, self.styleImageView.image.size.height);
     self.titleLabel.frame = CGRectMake(self.styleImageView.frame.origin.x + self.styleImageView.frame.size.width + kMargin, kMargin, maxLabelSize.width, titleLabelHeight);
     self.subtitleLabel.frame = CGRectMake(self.titleLabel.frame.origin.x, self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + (self.titleLabel.text == nil ? 0.f : kMargin/2.f), maxLabelSize.width, subtitleLabelHeight);
-    
+
     if (animated) {
         [UIView commitAnimations];
     }
-    
+
     if (self.showShadow) {
         CGRect oldShadowPath = CGPathGetPathBoundingBox(self.layer.shadowPath);
         CGRect newShadowPath = CGRectMake(self.bounds.origin.x - kMargin, self.bounds.origin.y, self.bounds.size.width + kMargin*2.f, self.bounds.size.height);
         self.layer.shadowPath = [UIBezierPath bezierPathWithRect:newShadowPath].CGPath;
-        
+
         if (animated) {
             CABasicAnimation *shadowAnimation = [CABasicAnimation animationWithKeyPath:@"shadowPath"];
             shadowAnimation.fromValue = (id)[UIBezierPath bezierPathWithRect:oldShadowPath].CGPath;
@@ -605,14 +605,14 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     }
 }
 
-- (void)updatePositionAfterRotationWithY:(CGFloat)yPos animated:(BOOL)animated {    
-    CFTimeInterval positionAnimationDuration = kRotationDurationIphone; 
+- (void)updatePositionAfterRotationWithY:(CGFloat)yPos animated:(BOOL)animated {
+    CFTimeInterval positionAnimationDuration = kRotationDurationIphone;
 
     BOOL isAnimating = self.isAnimating;
     CALayer *activeLayer = isAnimating ? (CALayer *)self.layer.presentationLayer : self.layer;
     NSString *currentAnimationKey = nil;
     CAMediaTimingFunction *timingFunction = nil;
-    
+
     if (isAnimating) {
         CABasicAnimation *currentAnimation;
         if (self.state == ALAlertBannerStateShowing) {
@@ -630,7 +630,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
         CFTimeInterval remainingAnimationDuration = currentAnimation.duration - (CACurrentMediaTime() - currentAnimation.beginTime);
         timingFunction = currentAnimation.timingFunction;
         positionAnimationDuration = remainingAnimationDuration;
-        
+
         [self.layer removeAnimationForKey:currentAnimationKey];
     }
 
@@ -640,7 +640,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
             case ALAlertBannerPositionUnderNavBar:
                 yPos -= self.layer.bounds.size.height;
                 break;
-                
+
             case ALAlertBannerPositionBottom:
                 yPos += self.layer.bounds.size.height;
                 break;
@@ -649,63 +649,69 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     CGPoint oldPos = activeLayer.position;
     CGPoint newPos = CGPointMake(oldPos.x, yPos);
     self.layer.position = newPos;
-    
-    if (animated) {        
+
+    if (animated) {
         CABasicAnimation *positionAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
         positionAnimation.fromValue = [NSValue valueWithCGPoint:oldPos];
         positionAnimation.toValue = [NSValue valueWithCGPoint:newPos];
-        
+
         //because the banner's location is relative to the height of the screen when in the bottom position, we should just immediately set it's position upon rotation events. this will prevent any ill-timed animations due to the presentation layer's position at the time of rotation
         if (self.position == ALAlertBannerPositionBottom) {
             positionAnimationDuration = AL_DEVICE_ANIMATION_DURATION;
         }
-        
+
         positionAnimation.duration = positionAnimationDuration;
         positionAnimation.timingFunction = timingFunction == nil ? [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear] : timingFunction;
-        
+
         if (currentAnimationKey != nil) {
             //hijack the old animation's key value
             positionAnimation.delegate = self;
             [positionAnimation setValue:currentAnimationKey forKey:@"anim"];
         }
-        
+
         [self.layer addAnimation:positionAnimation forKey:currentAnimationKey];
     }
 }
 
 - (void)drawRect:(CGRect)rect {
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
     UIColor *fillColor;
+    UIColor *gradientColor;
     switch (self.style) {
         case ALAlertBannerStyleSuccess:
-            fillColor = [UIColor colorWithRed:(77/255.0) green:(175/255.0) blue:(67/255.0) alpha:1.f];
+            gradientColor = [UIColor blackColor];
+            fillColor = [UIColor colorWithWhite:0.232 alpha:1.000];
             break;
         case ALAlertBannerStyleFailure:
-            fillColor = [UIColor colorWithRed:(173/255.0) green:(48/255.0) blue:(48/255.0) alpha:1.f];
+            gradientColor = [UIColor colorWithRed:(173/255.0) green:(48/255.0) blue:(48/255.0) alpha:1.f];
+            fillColor = [gradientColor darkerColor];
             break;
         case ALAlertBannerStyleNotify:
-            fillColor = [UIColor colorWithRed:(48/255.0) green:(110/255.0) blue:(173/255.0) alpha:1.f];
+            gradientColor = [UIColor colorWithRed:(48/255.0) green:(110/255.0) blue:(173/255.0) alpha:1.f];
+            fillColor = [gradientColor darkerColor];
             break;
         case ALAlertBannerStyleWarning:
-            fillColor = [UIColor colorWithRed:(211/255.0) green:(209/255.0) blue:(100/255.0) alpha:1.f];
+            gradientColor = [UIColor colorWithRed:(211/255.0) green:(209/255.0) blue:(100/255.0) alpha:1.f];
+            fillColor = [gradientColor darkerColor];
             break;
     }
-    
-    NSArray *colorsArray = [NSArray arrayWithObjects:(id)[fillColor CGColor], (id)[[fillColor darkerColor] CGColor], nil];
-    CGColorSpaceRef colorSpace =  CGColorSpaceCreateDeviceRGB();
-    const CGFloat locations[2] = {0.f, 1.f};
-    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colorsArray, locations);
-    
-    CGContextDrawLinearGradient(context, gradient, CGPointZero, CGPointMake(0.f, self.bounds.size.height), 0.f);
-    
+
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    NSArray* gradientColors = [NSArray arrayWithObjects:
+                               (id)fillColor.CGColor,
+                               (id)gradientColor.CGColor, nil];
+    CGFloat gradientLocations[] = {0, 1};
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)gradientColors, gradientLocations);
+
+    UIBezierPath* rectanglePath = [UIBezierPath bezierPathWithRect: CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+    CGContextSaveGState(context);
+    [rectanglePath addClip];
+    CGContextDrawLinearGradient(context, gradient, CGPointZero, CGPointMake(0.f, self.bounds.size.height), 0);
+    CGContextRestoreGState(context);
+
     CGGradientRelease(gradient);
     CGColorSpaceRelease(colorSpace);
-    
-    CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.f green:0.f blue:0.f alpha:0.6f].CGColor);
-    CGContextFillRect(context, CGRectMake(0.f, rect.size.height - 1.f, rect.size.width, 1.f));
-    CGContextSetFillColorWithColor(context, [UIColor colorWithRed:1.f green:1.f blue:1.f alpha:0.3f].CGColor);
-    CGContextFillRect(context, CGRectMake(0.f, 0.f, rect.size.width, 1.f));
 }
 
 - (NSString *)description {
