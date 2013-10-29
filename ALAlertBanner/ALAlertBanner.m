@@ -167,8 +167,8 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     _titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:15.f];
     _titleLabel.textColor = [UIColor colorWithRed:1.000 green:0.800 blue:0.000 alpha:0.9];
     _titleLabel.textAlignment = NSTextAlignmentLeft;
-    _titleLabel.numberOfLines = 1;
-    _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    _titleLabel.numberOfLines = 0;
+    _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     _titleLabel.layer.shadowColor = [UIColor blackColor].CGColor;
     _titleLabel.layer.shadowOffset = CGSizeMake(0.f, -1.f);
     _titleLabel.layer.shadowOpacity = 0.3f;
@@ -520,7 +520,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
     BOOL isSuperviewKindOfWindow = ([superview isKindOfClass:[UIWindow class]]);
 
     CGSize maxLabelSize = CGSizeMake(superview.bounds.size.width - (kMargin*3) - self.styleImageView.image.size.width, CGFLOAT_MAX);
-    CGFloat titleLabelHeight = AL_SINGLELINE_TEXT_HEIGHT(self.titleLabel.text, self.titleLabel.font);
+    CGFloat titleLabelHeight = AL_MULTILINE_TEXT_HEIGHT(self.titleLabel.text, self.titleLabel.font, maxLabelSize, self.titleLabel.lineBreakMode);
     CGFloat subtitleLabelHeight = AL_MULTILINE_TEXT_HEIGHT(self.subtitleLabel.text, self.subtitleLabel.font, maxLabelSize, self.subtitleLabel.lineBreakMode);
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1)
     {
@@ -562,7 +562,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 
 - (void)updateSizeAndSubviewsAnimated:(BOOL)animated {
     CGSize maxLabelSize = CGSizeMake(self.superview.bounds.size.width - (kMargin*3.f) - self.styleImageView.image.size.width, CGFLOAT_MAX);
-    CGFloat titleLabelHeight = AL_SINGLELINE_TEXT_HEIGHT(self.titleLabel.text, self.titleLabel.font);
+    CGFloat titleLabelHeight = AL_MULTILINE_TEXT_HEIGHT(self.titleLabel.text, self.titleLabel.font, maxLabelSize, self.titleLabel.lineBreakMode);
     CGFloat subtitleLabelHeight = AL_MULTILINE_TEXT_HEIGHT(self.subtitleLabel.text, self.subtitleLabel.font, maxLabelSize, self.subtitleLabel.lineBreakMode);
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1)
     {
